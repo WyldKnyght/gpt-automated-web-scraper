@@ -76,12 +76,10 @@ html_soup = BeautifulSoup(response, 'html.parser')
         response = self.llm(messages)
         generated_code = response.content
 
-        full_scraping_code = f"""
+        return f"""
 {self.scraping_code}
 {generated_code}
         """
-        #print(full_scraping_code)
-        return full_scraping_code
 
         
 

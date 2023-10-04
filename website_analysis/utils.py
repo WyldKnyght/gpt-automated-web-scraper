@@ -51,7 +51,4 @@ def analyze_api_calls(api_calls):
         temperature=0.5,
     )
 
-    # Extract the API analysis results from the GPT-3 response
-    api_analysis_results = response.choices[0].text.strip()
-
-    return api_analysis_results
+    return response.choices[0].text.strip()

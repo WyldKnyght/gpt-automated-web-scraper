@@ -17,15 +17,11 @@ def list_html_files(folder_path):
     Returns:
         list: A list of HTML file names.
     """
-    html_files = []
-
-    # List all files in the specified folder
-    for filename in os.listdir(folder_path):
-        # Check if the file has an .html or .htm extension
-        if filename.lower().endswith((".html", ".htm")):
-            html_files.append(filename)
-
-    return html_files
+    return [
+        filename
+        for filename in os.listdir(folder_path)
+        if filename.lower().endswith((".html", ".htm"))
+    ]
 
 
 if __name__ == "__main__":

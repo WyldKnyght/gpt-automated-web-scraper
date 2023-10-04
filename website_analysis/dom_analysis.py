@@ -46,15 +46,11 @@ class HTMLSearcher:
         if not elements_containing_string:
             elements_containing_string = parsed_html(string=lambda text: target_string in text)
 
-            # If still not found, search within tag attributes
-            if not elements_containing_string:
-                elements_containing_string = parsed_html(lambda tag: target_string in str(tag.attrs))
+        # If still not found, search within tag attributes
+        if not elements_containing_string:
+            elements_containing_string = parsed_html(lambda tag: target_string in str(tag.attrs))
 
-        if elements_containing_string:
-            # Just take the first occurrence for this example
-            return elements_containing_string[0]
-        else:
-            return None
+        return elements_containing_string[0] if elements_containing_string else None
 
 
 class ParentExtractor:
@@ -69,10 +65,7 @@ class HTMLPreparer:
         # Convert the element back into a string of HTML
         element_html = str(element)
 
-        # Strip out any leading/trailing white space
-        prepared_html = element_html.strip()
-
-        return prepared_html
+        return element_html.strip()
 
 
 class HTMLProcessingPipeline:
@@ -86,8 +79,7 @@ class HTMLProcessingPipeline:
         parsed_html = self.parser.parse(html)
         target_element = self.searcher.search(parsed_html, target_string)
         parent_element = self.extractor.extract(target_element, generations)
-        prepared_html = self.preparer.prepare(parent_element)
-        return prepared_html
+        return self.preparer.prepare(parent_element)
     
 
 class HtmlManager:
@@ -102,25 +94,22 @@ class HtmlManager:
     def process_html(self):
         html = self.loader.load()
 
-        if len(html) >= self.max_length:
-            # Create instances of each class
-            parser = HTMLParser()
-            searcher = HTMLSearcher()
-            extractor = ParentExtractor()
-            preparer = HTMLPreparer()
+        if len(html) < self.max_length:
+            return html
+                    
 
-            # Create an instance of the pipeline using the instances of the classes
-            pipeline = HTMLProcessingPipeline(parser, searcher, extractor, preparer)
+        # Create instances of each class
+        parser = HTMLParser()
+        searcher = HTMLSearcher()
+        extractor = ParentExtractor()
+        preparer = HTMLPreparer()
 
-            # Call the `process` method of the pipeline with the necessary parameters
-            target_string = self.target_string
-            generations = 3
-            processed_html = pipeline.process(html, target_string, generations)
-        else:
-            processed_html = html
-            
+        # Create an instance of the pipeline using the instances of the classes
+        pipeline = HTMLProcessingPipeline(parser, searcher, extractor, preparer)
 
-        return processed_html 
+        # Call the `process` method of the pipeline with the necessary parameters
+        target_string = self.target_string
+        return pipeline.process(html, target_string, 3) 
 
 
 def main():
